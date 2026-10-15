@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioLearning - Tema 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init({ publicKey: "3LjnpLaDboHWv0VPY" });
+        })();
+    </script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .iframe-container { position: relative; width: 100%; height: 75vh; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .nav-btn { transition: all 0.3s ease; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .nav-btn:hover { transform: translateY(-2px); }
+        .nav-btn.active { border-color: #10b981; color: #10b981; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        .dot-pulse { animation: pulse-dot 1.2s infinite; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-xl font-black text-emerald-600 tracking-tight">UNIDAD 1</h1>
+                    <p class="text-slate-500 font-bold text-xs uppercase">Tema 1.1: Niveles de organización</p>
+                </div>
+               
+                <nav class="flex flex-wrap justify-center gap-1 md:gap-4">
+                    <button onclick="prepQuiz('deber', this)" class="nav-btn active px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>🧪</span> Deber
+                    </button>
+                    <button onclick="prepQuiz('evaluacion', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📝</span> Repaso
+                    </button>
+                    <button onclick="prepQuiz('extra', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📚</span> Práctica
+                    </button>
+                    <button onclick="prepQuiz('evaluacion_final', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📊</span> Evaluación
+                    </button>
+                    <button onclick="showSection('pdf', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📋</span> Pizarra
+                    </button>
+                    <button onclick="showSection('video', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>🎥</span> Video
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main id="app" class="max-w-5xl mx-auto p-6">
+    </main>
+    <script>
+        const DRIVE_PDF_URL = "https://drive.google.com/file/d/1hrUTNLZXSuog-GqR9KfCYsS869Xd46-T/view?usp=sharing";
+        const DRIVE_VIDEO_URL = "https://drive.google.com/file/d/1Zd2sQPYRNgixPjVT0TvBoQrLZrQ1Tx17/view?usp=sharing";
+
+
+        // PRINCIPAL (Deber + Repaso) 30/10 preguntas
+
+        const quizData = [
+            { question: 'Complete el enunciado: <br> La piel forma parte de nivel de organización ______debido a que se encuentra formado por el conjunto de_______', options: ['celular - órganos', 'tisular-células', 'organológico-células', 'sistemático-tejidos'], answer: 'organológico-células', explanation: 'Nivel Organológico: La piel no es un simple tejido, sino el órgano más grande del cuerpo humano. Por lo tanto, se ubica en el nivel organológico o de órganos. <br> Conjunto de Tejidos: Todo órgano se define como la asociación de diferentes tejidos organizados para cumplir funciones específicas. La piel integra tejido epitelial (epidermis), tejido conectivo y adiposo (dermis e hipodermis), así como tejido nervioso y muscular liso.', multi: 'OFF', maxSelect: 1 },
+            { question: 'El nivel de organización que incluye a todas las sustancias esenciales para el mantenimiento de la vida, se denomina:', options: ['Tisular', 'Celular', 'Químico', 'Sistémico'], answer: 'Químico', explanation: 'Constituye el primer nivel de organización biológica. Incluye los átomos (C, H, O, N, P, S) y las moléculas o biomoléculas (agua, sales minerales, glúcidos, lípidos, proteínas y ácidos nucleicos) que forman las sustancias químicas esenciales para sostener la vida.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Ordene, de forma descendente, los niveles de organización ecológica. <br> 1. Comunidad <br> 2. Población <br> 3. Ecosistema <br> 4. Individuo', options: ['1, 2, 4, 3', '2, 1, 3, 4', '3, 1, 2, 4', '4, 2, 1, 3'], answer: '3, 1, 2, 4', explanation: 'Ecosistema: Comunidad + entorno físico <br> Comunidad: Diferentes poblaciones interactuando <br> Población: Individuos de la misma especie <br> Individuo: Un solo organismo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'El nivel de organización ecológica, que se encuentra formado por individuos de la misma especie se denomina:', options: ['Población', 'Comunidad', 'Ecosistema', 'Ecósfera'], answer: 'Población', explanation: 'Una población se define como un grupo de individuos de la misma especie que conviven en un área determinada y pueden reproducirse entre sí.', multi: 'OFF', maxSelect: 1 },
+            { question: 'El dióxido de carbono es un compuesto generado por la oxidación de compuestos orgánicos durante la respiración aerobia, el cual pertenece al nivel de organización:', options: ['Atómico', 'Molecular', 'Celular', 'Macromolécula'], answer: 'Molecular', explanation: 'Los elementos primarios (C, H, O, N, P, S) son átomos esenciales que forman las biomoléculas (carbohidratos, lípidos, proteínas, ácidos nucleicos).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Los elementos primarios son importantes para formar las biomoléculas, los cuales pertenecen al nivel de organización:', options: ['Atómico', 'Molecular', 'Celular', 'Macromolecular'], answer: 'Atómico', explanation: 'Agrupa a todos los elementos químicos (bioelementos) en su forma atómica fundamental antes de combinarse mediante enlaces para formar biomoléculas.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de los siguientes es un ejemplo de un ecosistema?', options: ['Un bosque tropical', 'Un lago', 'Un arrecife de coral', 'Todas las anteriores'], answer: 'Todas las anteriores', explanation: 'Un ecosistema se define como el sistema dinámico formado por la interacción entre los seres vivos (biocenosis) y el medio ambiente físico no vivo (biotopo), abarcando tanto sistemas terrestres como acuáticos de agua dulce o marinos.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Al analizar un determinado carbohidrato, se determina que está constituido por una molécula de glucosa y una molécula de fructosa, unidos mediante enlaces glucosídico. ¿A qué nivel de organización pertenecerá el carbohidrato?', options: ['Químico', 'Biológico', 'Ecológico'], answer: 'Químico', explanation: 'Agrupa a los niveles abióticos o sin vida (subatómico, atómico, molecular y macromolecular). Al ser un compuesto orgánico formado por la unión covalentemente enlazada de glucosa y fructosa, la sacarosa pertenece al nivel molecular.', multi: 'OFF', maxSelect: 1 },
+            { question: 'La hemoglobina es una proteína formada por unión de aminoácidos cuya función principal es el transporte de oxígeno. ¿A qué nivel de organización pertenece esta proteína?', options: ['Atómico', 'Macromolecular', 'Celular', 'Tisular'], answer: 'Macromolecular', explanation: 'La hemoglobina es una proteína, y las proteínas son macromoléculas formadas por la unión de muchos aminoácidos.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Un estudiante de boxeo cuando realiza sus prácticas, los músculos de los brazos y piernas se contraen, actuando proteínas contráctiles llamadas actinas, las cuales pertenecen al nivel:', options: ['Macromolecular', 'Molecular', 'Celular', 'Tisular'], answer: 'Macromolecular', explanation: 'Las actinas son proteínas contráctiles, por lo tanto, también son macromoléculas.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es el nivel de organización que incluye a todas las poblaciones de diferentes especies en una ubicación geográfica específica?', options: ['Nivel de células', 'Nivel de organismos', 'Nivel de población', 'Nivel de ecosistema'], answer: 'Nivel de ecosistema', explanation: 'Un ecosistema incluye todas las poblaciones de diferentes especies (comunidad) y su interacción con el entorno físico (factores abióticos).', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué nivel de organización involucra la interacción de diferentes tejidos que trabajan juntos para realizar una función específica?', options: ['Nivel de tejidos', 'Nivel de sistemas de órganos', 'Nivel de órganos', 'Nivel de comunidad'], answer: 'Nivel de órganos', explanation: 'Los órganos están formados por diferentes tejidos que trabajan juntos para realizar una función específica, como el corazón (tejido muscular, nervioso, conectivo).', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es el nivel de organización que incluye todos los organismos vivos en un área particular y sus factores abióticos?', options: ['Nivel de comunidad', 'Nivel de ecosistema', 'Nivel de población', 'Nivel de organismo'], answer: 'Nivel de ecosistema', explanation: 'Un ecosistema incluye todos los organismos vivos en un área particular (comunidad) y sus interacciones con los factores no vivos (abióticos) como el agua, la luz y la temperatura.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿En qué nivel de organización encontrarías moléculas formadas por átomos específicos?', options: ['Nivel atómico', 'Nivel molecular', 'Nivel celular', 'Nivel de tejidos'], answer: 'Nivel molecular', explanation: 'Las moléculas son agrupaciones de átomos unidos por enlaces químicos.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las siguientes opciones describe mejor la relación entre los niveles de organización biológica?', options: ['Cada nivel es independiente de los demás.', 'Cada nivel superior incluye a los niveles inferiores.', 'Los niveles inferiores son más importantes que los niveles superiores.', 'Los niveles superiores son más simples que los niveles inferiores.'], answer: 'Cada nivel superior incluye a los niveles inferiores.', explanation: 'Muestra una estructura jerárquica anidada. Por ejemplo, las células contienen moléculas, los tejidos están constituidos por células, los órganos por tejidos y los ecosistemas por comunidades. Además, con cada salto de nivel surgen propiedades emergentes que no existían de forma aislada en el nivel inferior.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es el nivel de organización que incluye conjuntos de células similares que trabajan juntas para realizar una función específica?', options: ['Nivel de órganos', 'Nivel de tejidos', 'Nivel celular', 'Nivel molecular'], answer: 'Nivel de tejidos', explanation: 'Los tejidos están formados por grupos de células similares que trabajan juntas para realizar una función específica, como el tejido muscular o el tejido nervioso.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Un niño sufre una enfermedad que impide que su páncreas produzca insulina. Esto genera un desbalance en sus niveles de glucosa. ¿A qué nivel de organización afecta directamente este problema?', options: ['Celular', 'Tisular', 'Organológico', 'Sistémico'], answer: 'Organológico', explanation: 'El páncreas es un órgano glandular complejo. Al indicar el enunciado que la enfermedad impide que dicho órgano produzca insulina, la afectación directa en primera instancia recae sobre la estructura y función del nivel organológico.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las siguientes opciones representa un nivel de organización más complejo que el nivel de células?', options: ['Nivel molecular', 'Nivel de organismos', 'Nivel de población', 'Nivel de tejidos'], answer: 'Nivel de tejidos', explanation: 'Los tejidos son un nivel de organización más complejo que las células individuales, ya que están formados por grupos de células que trabajan juntas.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es la unidad básica de estructura y función de todos los seres vivos?', options: ['Molécula', 'Célula', 'Tejido', 'Órgano'], answer: 'Célula', explanation: 'Es la estructura más pequeña capaz de realizar por sí misma las tres funciones vitales (nutrición, relación y reproducción), marcando el límite entre lo inerte y lo vivo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'En una zona protegida se introducen cabras que comienzan a competir por el alimento con los venados nativos, afectando el equilibrio local. Este caso debe estudiarse en el nivel:', options: ['Poblacional', 'Comunitario', 'Organísmico', 'Celular'], answer: 'Comunitario', explanation: 'La comunidad o biocenosis engloba a todas las poblaciones de diferentes especies que coexisten e interactúan en un área determinada. El estudio de las relaciones entre especies, como la competencia por alimento, pertenece a este nivel.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las siguientes opciones representa la secuencia correcta de los niveles de organización biológica, desde el más simple al más complejo?', options: ['Célula, órgano, tejido, sistema, organismo', 'Molécula, célula, tejido, órgano, sistema', 'Átomo, molécula, célula, órgano, tejido', 'Organismo, sistema, órgano, tejido, célula'], answer: 'Molécula, célula, tejido, órgano, sistema', explanation: 'Esta es la secuencia correcta de los niveles de organización biológica, desde el más simple (moléculas) hasta el más complejo (sistemas de órganos).', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué es una comunidad en términos de niveles de organización?', options: ['Un grupo de individuos de la misma especie que viven en la misma área.', 'Un grupo de individuos de diferentes especies que viven en la misma área.', 'Un grupo de órganos que trabajan juntos para realizar una función específica.', 'Un grupo de células similares que trabajan juntas para realizar una función específica.'], answer: 'Un grupo de individuos de diferentes especies que viven en la misma área.', explanation: 'Explicación22.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Durante una investigación ecológica, se evalúa cómo el cambio de temperatura afecta a las especies de una laguna. ¿Qué nivel se está estudiando?', options: ['Poblacional', 'Organísmico', 'Celular', 'Ecosistémico'], answer: 'Ecosistémico', explanation: 'Este nivel abarca las interacciones dinámicas entre el medio ambiente físico o no vivo (biotopo) y las comunidades biológicas que lo habitan (biocenosis).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Un equipo de biólogos estudia cómo la deforestación en un bosque tropical ha afectado a los jaguares, observando que su número ha disminuido en una zona específica. Este estudio se centra en el nivel de:', options: ['Comunidad', 'Ecosistema', 'Población', 'Biosfera'], answer: 'Población', explanation: 'Corresponde al conjunto de individuos de la misma especie que habitan una zona determinada; los análisis de este nivel evalúan parámetros demográficos como la densidad, distribución o fluctuación en el número de integrantes.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Un médico explica que una insuficiencia hepática altera la capacidad del hígado para producir bilis y metabolizar sustancias tóxicas. ¿Cuál es el nivel de organización implicado en esta función y por qué?', options: ['Tisular, porque la función depende de hepatocitos individuales', 'Celular, porque las células realizan las reacciones bioquímicas', 'Organológico, porque la función involucra un órgano específico', 'Sistémico, porque se altera todo el cuerpo'], answer: 'Organológico, porque la función involucra un órgano específico', explanation: 'El hígado es un órgano constituido por diversos tejidos que trabajan de forma coordinada. Al enfocarse la premisa en la pérdida de la función global de dicho órgano (producción de bilis y metabolización de toxinas), el nivel de organización directamente afectado es el organológico.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Los glóbulos rojos transportan oxígeno a través del sistema circulatorio gracias a la hemoglobina, una proteína compleja con estructura cuaternaria. Esta proteína pertenece al nivel:', options: ['Macromolecular', 'Celular', 'Sistémico', 'Molecular'], answer: 'Macromolecular', explanation: 'Incluye a las grandes moléculas biológicas (biopolímeros) constituidas por la polimerización de unidades más simples (monómeros), como es el caso de las proteínas, los ácidos nucleicos y los polisacáridos.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Una persona con deficiencia en insulina presenta niveles elevados de glucosa en sangre. Este problema inicia a nivel molecular. ¿Cuál es la secuencia correcta de niveles afectados por esta condición?', options: ['Celular &rarr;  Molecular &rarr;  Organísmico', 'Molecular &rarr;  Celular &rarr;  Sistémico', 'Tisular &rarr;  Orgánico &rarr;  Poblacional', 'Sistémico &rarr;  Molecular &rarr;  Tisular'], answer: 'Molecular &rarr;  Celular &rarr;  Sistémico', explanation: 'Molecular: Corresponde al origen del problema, caracterizado por la deficiencia o ausencia de la hormona insulina (una proteína) y la alteración en el transporte de la glucosa. <br> Celular: Al no haber la señalización molecular adecuada, las células no pueden abrir sus canales ni captar glucosa para realizar la respiración celular, quedando privadas de energía. <br> Sistémico: La acumulación de glucosa no absorbida en el torrente sanguíneo provoca hiperglucemia, alterando la homeostasis del sistema circulatorio, renal y endocrino en su conjunto..', multi: 'OFF', maxSelect: 1 },
+            { question: 'En una cadena alimentaria, se observa que la desaparición del zorro genera un aumento descontrolado de conejos. Este fenómeno se analiza en el nivel de:', options: ['Población', 'Comunidad', 'Ecosistema', 'Biosfera'], answer: 'Comunidad', explanation: 'Estudia las interacciones entre diferentes poblaciones que coexisten en una misma área. Las cadenas alimentarias, redes tróficas y dinámicas depredador-presa pertenecen a este nivel.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Un estudiante observa al microscopio un conjunto de células que se contraen coordinadamente. El profesor le indica que está observando tejido cardíaco. ¿Qué niveles de organización están presentes en esta muestra?', options: ['Celular, tisular y organológico', 'Molecular, celular y organológico', 'Tisular, organológico y sistémico', 'Solo el tisular'], answer: 'Solo el tisular', explanation: 'La preparación microscópica contiene únicamente un fragmento de tejido (agrupación funcional de miocardiocitos). Al ser solo una muestra, no posee la organización ni la complejidad estructural de un órgano completo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Relacione los niveles de organización con su descripción correspondiente: <br> 1. Molecular <br> 2. Organológico <br> 3. Sistémico <br> 4. Ecológico <br> a. Relación funcional entre varios órganos <br> b. Interacción entre especies y su entorno <br> c. Unión de átomos con funciones específicas <br> d. Estructura con funciones fisiológicas concretas', options: ['1c, 2d, 3a, 4b', '1a, 2b, 3c, 4d', '1d, 2c, 3a, 4b', '1b, 2a, 3d, 4c'], answer: '1c, 2d, 3a, 4b', explanation: 'a) 1c, 2d, 3a, 4b <br> Molecular (1) &rarr; c: moléculas = unión de átomos con funciones específicas. <br> Organológico (2) &rarr; d: órgano = estructura con funciones fisiológicas concretas. <br> Sistémico (3) &rarr; a: sistema = relación funcional entre varios órganos. <br> Ecológico (4) &rarr; b: ecología = interacción entre especies y su entorno.', multi: 'OFF', maxSelect: 1 },
+        ];
+
+
+        // Practica 20 preguntas
+
+        const quizDataExtra = [
+            { question: '¿Qué nivel de organización biológica se encuentra por encima del nivel de organismo?', options: ['Población', 'Comunidad', 'Ecosistema', 'Biósfera'], answer: 'Población', explanation: 'Agrupa a varios individuos de la misma especie que coexisten en un espacio y tiempo determinados, constituyendo el peldaño directo que sigue al organismo en la jerarquía biológica.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué es una población en términos de niveles de organización?', options: ['Un grupo de individuos de diferentes especies que viven en la misma área.', 'Un grupo de individuos de la misma especie que viven en la misma área.', 'Un grupo de órganos que trabajan juntos para realizar una función específica.', 'Un grupo de células similares que trabajan juntas para realizar una función específica.'], answer: 'Un grupo de individuos de la misma especie que viven en la misma área.', explanation: 'Un grupo de individuos de la misma especie que viven en la misma área: Esta es la definición de una población.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de los siguientes es un ejemplo de un ecosistema?', options: ['Un bosque tropical', 'Un lago', 'Un arrecife de coral', 'Todas las anteriores'], answer: 'Todas las anteriores', explanation: 'Un bosque tropical, un lago y un arrecife de coral son ejemplos de ecosistemas, ya que incluyen comunidades de organismos y su entorno físico.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué nivel de organización abarca todos los ecosistemas de la Tierra?', options: ['Comunidad', 'Población', 'Biósfera', 'Ecosistema'], answer: 'Biósfera', explanation: 'Constituye el sistema global formado por el conjunto de todos los seres vivos del planeta junto con los medios físicos donde habitan (atmósfera, hidrosfera y litosfera), integrando todos los ecosistemas de la Tierra.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las siguientes opciones describe mejor la relación entre los niveles de organización biológica?', options: ['Cada nivel es independiente de los demás.', 'Cada nivel superior incluye a los niveles inferiores.', 'Los niveles inferiores son más importantes que los niveles superiores.', 'Los niveles superiores son más simples que los niveles inferiores.'], answer: 'Cada nivel superior incluye a los niveles inferiores.', explanation: 'Los niveles de organización biológica están jerarquizados, de modo que cada nivel superior incluye a los niveles inferiores y es más complejo.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es la diferencia principal entre un órgano y un tejido?', options: ['Un órgano está formado por diferentes tipos de tejidos, mientras que un tejido está formado por células similares.', 'Un órgano es más pequeño que un tejido.', 'Un órgano tiene una función específica, mientras que un tejido no.', 'Un órgano está formado por células, mientras que un tejido está formado por moléculas.'], answer: 'Un órgano está formado por diferentes tipos de tejidos, mientras que un tejido está formado por células similares.', explanation: 'Un órgano está formado por diferentes tipos de tejidos, mientras que un tejido está formado por células similares: Esta es la principal diferencia entre un órgano y un tejido.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué tipo de macromolécula es el ADN?', options: ['Proteína', 'Carbohidrato', 'Lípido', 'Ácido nucleico'], answer: 'Ácido nucleico', explanation: 'El ADN (ácido desoxirribonucleico) es un tipo de ácido nucleico que almacena la información genética.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es la unidad básica de estructura y función de todos los seres vivos?', options: ['Molécula', 'Célula', 'Tejido', 'Órgano'], answer: 'Célula', explanation: 'La célula es la unidad básica de estructura y función de todos los seres vivos.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué tipo de tejido es responsable de la contracción y el movimiento?', options: ['Tejido epitelial', 'Tejido conectivo', 'Tejido muscular', 'Tejido nervioso'], answer: 'Tejido muscular', explanation: 'El tejido muscular es responsable de la contracción y el movimiento del cuerpo.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es la función principal del sistema circulatorio?', options: ['Transportar oxígeno y nutrientes a las células y eliminar desechos.', 'Regular las actividades corporales a través de hormonas.', 'Proteger el cuerpo contra enfermedades.', 'Proporcionar soporte y estructura al cuerpo.'], answer: 'Transportar oxígeno y nutrientes a las células y eliminar desechos.', explanation: 'Esta es la función principal del sistema circulatorio, que incluye el corazón, los vasos sanguíneos y la sangre.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de los siguientes NO es un ejemplo de un organismo multicelular?', options: ['Planta', 'Animal', 'Hongo', 'Bacteria'], answer: 'Bacteria', explanation: 'Las bacterias son organismos unicelulares, mientras que las plantas, animales y hongos son multicelulares.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué es una comunidad en términos de niveles de organización?', options: ['Un grupo de individuos de la misma especie que viven en la misma área.', 'Un grupo de individuos de diferentes especies que viven en la misma área.', 'Un grupo de órganos que trabajan juntos para realizar una función específica.', 'Un grupo de células similares que trabajan juntas para realizar una función específica.'], answer: 'Un grupo de individuos de diferentes especies que viven en la misma área.', explanation: 'Un grupo de individuos de diferentes especies que viven en la misma área: Esta es la definición de una comunidad.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de los siguientes es un ejemplo de un factor biótico en un ecosistema?', options: ['Plantas', 'Animales', 'Microorganismos', 'Todas las anteriores'], answer: 'Todas las anteriores', explanation: 'Los factores bióticos son los seres vivos en un ecosistema, incluyendo plantas, animales y microorganismos.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué nivel de organización se encuentra por debajo del nivel de ecosistema?', options: ['Comunidad', 'Población', 'Biósfera', 'Organismo'], answer: 'Comunidad', explanation: 'Está integrada por el conjunto de poblaciones de distintas especies que coexisten e interactúan en una misma área (el componente biótico). Al integrar los factores abióticos (medio físico) con la comunidad, se forma el ecosistema.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las siguientes opciones describe mejor la relación entre los niveles de organización biológica y la complejidad?', options: ['A medida que aumenta el nivel de organización, disminuye la complejidad.', 'A medida que aumenta el nivel de organización, aumenta la complejidad.', 'La complejidad no está relacionada con el nivel de organización.', 'La complejidad solo aumenta en los niveles superiores de organización.'], answer: 'A medida que aumenta el nivel de organización, aumenta la complejidad.', explanation: 'Los niveles superiores de organización incluyen más componentes y tienen interacciones más complejas que los niveles inferiores.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es la diferencia principal entre una célula procariota y una célula eucariota?', options: ['Las células procariotas tienen un núcleo definido, mientras que las células eucariotas no.', 'Las células procariotas son más grandes que las células eucariotas.', 'Las células procariotas no tienen organelos membranosos, mientras que las células eucariotas sí.', 'Las células procariotas son más complejas que las células eucariotas.'], answer: 'Las células procariotas no tienen organelos membranosos, mientras que las células eucariotas sí.', explanation: 'Esta es la principal diferencia entre células procariotas (bacterias y arqueas) y eucariotas (plantas, animales, hongos y protistas).', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué tipo de tejido es responsable de la transmisión de señales eléctricas?', options: ['Tejido epitelial', 'Tejido conectivo', 'Tejido muscular', 'Tejido nervioso'], answer: 'Tejido nervioso', explanation: 'El tejido nervioso está formado por neuronas y células gliales, y es responsable de la transmisión de señales eléctricas en el cuerpo.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es la función principal del sistema respiratorio?', options: ['Transportar oxígeno y nutrientes a las células y eliminar desechos.', 'Regular las actividades corporales a través de hormonas.', 'Proteger el cuerpo contra enfermedades.', 'Intercambiar gases entre el cuerpo y el ambiente.'], answer: 'Intercambiar gases entre el cuerpo y el ambiente.', explanation: 'El sistema respiratorio permite la entrada de oxígeno (O2) al cuerpo y la eliminación de dióxido de carbono (CO2).', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de los siguientes es un ejemplo de un factor abiótico en un ecosistema?', options: ['Temperatura', 'Luz solar', 'Agua', 'Todas las anteriores'], answer: 'Todas las anteriores', explanation: 'Los factores abióticos son los componentes no vivos de un ecosistema, como la temperatura, la luz solar, el agua, el suelo y los minerales.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es la importancia de estudiar los niveles de organización biológica?', options: ['Nos permite comprender cómo los seres vivos están estructurados y cómo funcionan.', 'Nos ayuda a entender las interacciones entre los organismos y su entorno.', 'Nos proporciona una base para estudiar la evolución y la biodiversidad.', 'Todas las anteriores'], answer: 'Todas las anteriores', explanation: 'Estudiar los niveles de organización biológica es esencial para comprender la estructura, función, interacciones y evolución de los seres vivos.', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        // EVALUACIÓN (16 preguntas)
+
+        const quizDataEvaluacion = [
+            { question: 'Un equipo de neurocientíficos investiga cómo miles de millones de neuronas (nivel celular), al organizarse en redes complejas dentro del cerebro, permiten la aparición del pensamiento abstracto, la memoria y la conciencia. Ninguna neurona por sí sola posee conciencia, pero esta facultad surge de la interacción del conjunto. ¿Qué principio fundamental de la Biología Sistémica explica este fenómeno?', options: ['La regla de la segregación biótica.', 'El principio de las propiedades emergentes.', 'La teoría del reduccionismo molecular.', 'El dogma central de la homeostasis.'], answer: 'El principio de las propiedades emergentes.', explanation: 'Una propiedad emergente es una característica o función novedosa que surge en un nivel de organización complejo a partir de las interacciones ordenadas entre sus componentes de niveles inferiores, pero que no existe en ninguno de esos componentes tomados por separado. La máxima de este principio es: "El todo es más que la suma de sus partes".', multi: 'OFF', maxSelect: 1 },
+            { question: 'Los virus como el SARS-CoV-2 o el bacteriófago son agentes infecciones acelulares formados por un ácido nucleico (ADN o ARN) envuelto en una cubierta proteica llamada cápside. Carecen de metabolismo propio y no pueden reproducirse sin infectar una célula huésped. ¿En qué nivel de organización se clasifican los virus dentro de la jerarquía de la materia?', options: ['Nivel macromolecular', 'Nivel celular', 'Nivel de Complejo Supramolecular', 'Nivel de Organismo Unicelular'], answer: 'Nivel de Complejo Supramolecular', explanation: 'Los virus no cumplen con los postulados de la teoría celular (son acelulares). Al estar formados por la asociación de dos familias macromoleculares distintas (ácidos nucleicos + proteínas), pertenecen al nivel abiótico de Complejos Supramoleculares.', multi: 'OFF', maxSelect: 1 },
+            { question: 'El “mal de las vacas locas” o encefalopatía espongiforme es provocado por priones. Al analizar un prion en el laboratorio, los bioquímicos conforman que es un agente  patógeno constituido exclusivamente por una proteína alterada en su plegamiento y que carece por completo de ADN o ARN. ¿A qué nivel de organización?', options: ['Subnivel atómico', 'Subnivel molecular', 'Subnivel macromolecular', 'Subnivel celular'], answer: 'Subnivel macromolecular', explanation: 'Dado que un prion es únicamente una proteína (un polímero de aminoácidos) sin asociación con ácidos nucleicos ni estructura celular, pertenece al Subnivel Macromolecular (ámbito abiótico).', multi: 'OFF', maxSelect: 1 },
+            { question: 'En la anatomía animal y humana, se establece una diferencia técnica rigurosa entre el concepto de "Sistema" y "Aparato". ¿Cuál de las siguientes afirmaciones justifica de forma correcta por qué el Aparato Digestivo es considerado un aparato y no un sistema?', options: ['Porque está constituido por órganos con predominio de un mismo tipo de tejido homogéneo.', 'Porque sus órganos son heterogéneos y están formados por la combinación de variados tipos de tejidos.', 'Porque solo realiza funciones abióticas dentro de la cavidad abdominal.', 'Porque pertenece al subnivel de organización celular y no al sistémico.'], answer: 'Porque sus órganos son heterogéneos y están formados por la combinación de variados tipos de tejidos.', explanation: 'Un Sistema está formado por órganos donde predomina un mismo tipo de tejido (ej. sistema nervioso o muscular), mientras que un Aparato está constituido por órganos heterogéneos compuestos por diferentes tipos de tejidos que actúan de manera integrada (ej. el estómago del aparato digestivo contiene tejido epitelial, muscular liso, conectivo y nervioso).', multi: 'OFF', maxSelect: 1 },
+            { question: 'El átomo de carbono es el elemento químico fundamental sobre el cual se edifica la química orgánica de la vida. ¿Qué propiedad química del carbono le permite actuar como el esqueleto basal para la formación de cadenas de macromoléculas complejas y estables?', options: ['Su tetravalencia, que le permite formar 4 enlaces covalentes estables.', 'Su baja electronegatividad que le impide formar enlaces covalentes.', 'Su capacidad para formar enlaces iónicos con el oxígeno y nitrógeno.', 'Su tendencia a convertirse fácilmente en catión monovalente en medio acuso.'], answer: 'Su tetravalencia, que le permite formar 4 enlaces covalentes estables.', explanation: 'Debido a su tetravalencia (capacidad para compartir electrones formando cuatro enlaces covalentes estables con otros átomos de carbono o elementos como H, O, N), el carbono conforma la estructura o esqueleto lineal, ramificado o cíclico de todas las biomoléculas orgánicas.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Microorganismos como la bacteria Escherichia coli o el protozoario Ameba están constituidos por una sola célula capaz de realizar de manera autónoma todas las funciones vitales (nutrición, relación y reproducción). Debido a esta particularidad, ¿a qué niveles de organización pertenecen simultáneamente estos seres vivos?', options: ['Exclusivamente al nivel molecular e inorgánico.', 'Únicamente al nivel tisular y organológico.', 'Al nivel de comunidad y biósfera.', 'Al nivel celular y al nivel de individuo u organismo.'], answer: 'Al nivel celular y al nivel de individuo u organismo.', explanation: 'Aunque los organismos unicelulares están formados por una única célula, constituyen por sí mismos un individuo completo capaz de interactuar autónomamente con su entorno. Por lo tanto, pertenecen de forma simultánea al subnivel celular y al subnivel de individuo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Si un grupo de científicos evalúa la Tierra integrando la totalidad de la biósfera junto con los factores abióticos globales con los que interactúa, el flujo de la energía solar y los ciclos biogeoquímicos (carbono, nitrógeno, agua y fósforo), ¿a qué nivel ecológico de escala máxima están haciendo referencia?', options: ['Biocenosis', 'Biotipo', 'Ecósfera', 'Comunidad'], answer: 'Ecósfera', explanation: 'La Ecósfera es el concepto integrador que abarca la totalidad de la biósfera (componente vivo global) junto con todos los factores abióticos planetarios y los ciclos biogeoquímicos en su máxima escala (el ecosistema planetario total).', multi: 'OFF', maxSelect: 1 },
+            { question: 'En el reino vegetal, las estructuras superiores no se organizan en los mismos aparatos que en los animales. Un botánico estudia el conjunto de órganos formado por el tallo, las hojas y las flores de un manzano, orientado a la fotosíntesis, el transporte de savia y la reproducción. ¿Cómo se denomina a esta organización sistémica vegetal?', options: ['Sistema radicular', 'Sistema caulinar o epígeo', 'Aparato digestivo vegetal', 'Subnivel tisular fundamental'], answer: 'Sistema caulinar o epígeo', explanation: 'Las plantas se organizan principalmente en dos sistemas: el sistema radicular (raíces, orientado a la fijación y absorción) y el sistema caulinar o epígeo (compuesto por tallos, hojas y flores, orientado a la fotosíntesis, transporte y reproducción).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Durante el entrenamiento metabólico de un deportista, el cuerpo recurre a reservas complejas de carbohidratos. Mientras las plantas almacenan glucosa en forma de almidón en sus plastidios, los animales almacenan un polisacárido equivalente de reserva energética en el hígado y en los músculos. ¿A qué macromolécula se hace referencia? ', options: ['Celulosa', 'Quitina', 'Triglicérido', 'Glucógeno'], answer: 'Glucógeno', explanation: 'El glucógeno es el polisacárido de reserva energética propio de los animales y hongos, el cual se almacena principalmente en el hígado y en el tejido muscular esquelético.', multi: 'OFF', maxSelect: 1 },
+            { question: 'En el cuerpo humano, la sangre (medio líquido de transporte), el tejido óseo (soporte mecánico) y el tejido adiposo (reserva grasa) comparten un mismo grupo tisular básico. ¿A qué tipo de tejido animal pertenecen estas estructuras?', options: ['Tejido epitelial', 'Tejido conectivo', 'Tejido muscular', 'Tejido nervioso'], answer: 'Tejido conectivo', explanation: 'El tejido conectivo o conjuntivo es uno de los cuatro tejidos animales básicos y se caracteriza por brindar soporte, unión y nutrición; incluye especializaciones como el tejido óseo, el tejido adiposo y la sangre.', multi: 'OFF', maxSelect: 1 },
+            { question: 'El ecosistema es la unidad funcional de la ecología y se define por la interacción entre dos componentes indispensables: la Biocenosis y el Biotipo. ¿Qué opción describe adecuadamente a estos dos componentes?', options: ['Biocenosis: factores abióticos (suelo, clima) / Biotipo: comunidad viva.', 'Biocenosis: seres vivos (factores bióticos) / Biotipo: medio físico e inerte (factores abióticos).', 'Biocenosis: una sola especie / Biotipo: suma de todas las biosferas.', 'Biocenosis: virus y bacterias / Biotipo: animales vertebrados.'], answer: 'Biocenosis: seres vivos (factores bióticos) / Biotipo: medio físico e inerte (factores abióticos).', explanation: 'La fórmula del ecosistema es Ecosistema = Biocenosis (biótico/seres vivos) + Biotipo (abiótico/medio físico inerte como agua, luz, suelo y clima).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Un microscopista analiza una célula y observa que carece de envoltura nuclear (carioteca) y no presenta organelos membranosos en su citoplasma, encontrándose su ADN libre en una región llamada nucleoide. ¿Cómo se clasifica esta célula y qué organismo la posee? ', options: ['Célula Eucariota - Protozoario', 'Célula Procariota - Bacteria', 'Agente Acelular - Virus', 'Célula Eucariota - Hongo'], answer: 'Célula Procariota - Bacteria', explanation: 'Las células procariotas se caracterizan por carecer de un núcleo definido por carioteca y por no poseer organelos membranosos. Su ADN se encuentra en la región del nucleoide libre en el citoplasma; las bacterias y arqueas son ejemplos típicos de este nivel.', multi: 'OFF', maxSelect: 1 },
+            { question: 'El Agua (H<sub>2</sub>𝐎) y el Dióxido de Carbono (CO<sub>2</sub> ) son compuestos indispensables pertenecientes al subnivel molecular. ¿Por qué ambas sustancias son clasificadas como biomoléculas inorgánicas? ', options: ['Porque carecen de un esqueleto hidrocarbonado (sin enlaces carbono-carbono).', 'Porque se sintetizan exclusivamente dentro del núcleo de las células eucariotas.', 'Porque están formadas únicamente por aminoácidos mediante enlaces peptídicos.', 'Porque son moléculas gigantes formadas por la polimerización de monómeros.'], answer: 'Porque carecen de un esqueleto hidrocarbonado (sin enlaces carbono-carbono).', explanation: 'Explicación: Las biomoléculas inorgánicas (como el agua, el dióxido de carbono y las sales minerales) se caracterizan bioquímicamente por carecer de un esqueleto hidrocarbonado y por la ausencia de enlaces covalentes carbono-carbono (𝐶−𝐶). oide libre en el citoplasma; las bacterias y arqueas son ejemplos típicos de este nivel.', multi: 'OFF', maxSelect: 1 },
+            { question: 'En el subnivel macromolecular encontramos a los lípidos, los cuales son compuestos heterogéneos e hidrofóbicos. Dentro de esta familia, ¿cuál es la diferencia funcional principal entre los triglicéridos y los fosfolípidos?', options: ['Los triglicéridos forman la pared celular vegetal; los fosfolípidos sintetizan ATP.', 'Los triglicéridos funcionan como reserva de energía a largo plazo en el tejido adiposo; los fosfolípidos son los componentes estructurales de la bicapa lipídica membranosa.', 'Los triglicéridos son catalizadores enzimáticos; los fosfolípidos transportan oxígeno en la sangre.', 'Los triglicéridos portan el código genético; los fosfolípidos almacenan glucógeno.'], answer: 'Los triglicéridos funcionan como reserva de energía a largo plazo en el tejido adiposo; los fosfolípidos son los componentes estructurales de la bicapa lipídica membranosa.', explanation: 'Los triglicéridos (lípidos simples) son la principal reserva de energía química a largo plazo en el tejido adiposo animal; mientras que los fosfolípidos (lípidos complejos anfipáticos) constituyen la estructura fundamental de la bicapa lipídica de las membranas celulares.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Un estudiante de biología necesita ordenar jerárquicamente las estructuras biológicas desde la más simple hasta la más compleja. ¿Cuál de las siguientes secuencias representa correctamente un orden estrictamente ascendente de los niveles de organización?', options: ['Átomo &rarr; Molécula &rarr; Célula &rarr; Tejido &rarr; Órgano &rarr; Individuo &rarr; Población &rarr; Comunidad &rarr; Ecosistema.', 'Célula &rarr; Molécula &rarr; Tejido &rarr; Órgano &rarr; Población &rarr; Individuo &rarr; Ecosistema &rarr; Biósfera.', 'Tejido &rarr; Célula &rarr; Órgano &rarr; Sistema &rarr; Comunidad &rarr; Población &rarr; Ecosistema.', 'Molécula &rarr; Átomo &rarr; Célula &rarr; Órgano &rarr; Tejido &rarr; Población &rarr; Ecósfera.'], answer: 'Átomo &rarr; Molécula &rarr; Célula &rarr; Tejido &rarr; Órgano &rarr; Individuo &rarr; Población &rarr; Comunidad &rarr; Ecosistema.', explanation: 'El orden jerárquico ascendente correcto va desde el subnivel químico (átomo &rarr; molécula), pasa al subnivel biológico (célula &rarr; tejido &rarr; órgano &rarr; individuo) y culmina en los niveles ecológicos (población &rarr; comunidad &rarr; ecosistema).', multi: 'OFF', maxSelect: 1 },
+            { question: 'En las plantas superiores (cormofitas), las raíces desempeñan funciones de fijación al suelo y absorción de agua y sales minerales. ¿A qué categoría y subnivel de organización corresponden la raíz, el tallo y las hojas dentro de la botánica?', options: ['Subnivel Sistémico / Órganos Reproductivos.', 'Subnivel Organológico / Órganos Vegetativos.', 'Subnivel Tisular / Tejidos Vasculares.', 'Subnivel Ecológico / Factores Abióticos.'], answer: 'Subnivel Organológico / Órganos Vegetativos.', explanation: 'La raíz, el tallo y las hojas son estructuras formadas por la combinación de tejidos especializados, por lo que pertenecen al subnivel organológico (órganos) y se clasifican funcionalmente como órganos vegetativos (a diferencia de los reproductivos: flores, frutos y semillas).', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        let state = {
+            currentMode: 'deber',
+            view: 'quiz_home',
+            studentName: '',
+            studentEmail: '',
+            activeQuestions: [],
+            currentQuestion: 0,
+            score: 0,
+            selectedAnswer: null,
+            isAnswerCorrect: null,
+            emailStatus: null,
+            emailAnalysis: null,
+            emailAnalysisMsg: ''
+        };
+
+        const disposableDomains = [
+            'tempmail.com','temp-mail.org','guerrillamail.com','10minutemail.com','mailinator.com',
+            'yopmail.com','throwawaymail.com','fakeinbox.com','trashmail.com','getnada.com',
+            'maildrop.cc','dispostable.com','sharklasers.com','guerrillamailblock.com'
+        ];
+        const trustedProviders = [
+            'gmail.com','googlemail.com','hotmail.com','hotmail.es','hotmail.co.uk','outlook.com',
+            'outlook.es','live.com','msn.com','yahoo.com','yahoo.es','icloud.com','me.com',
+            'protonmail.com','proton.me','aol.com','zoho.com','gmx.com','mail.com'
+        ];
+
+        function isValidEmailFormat(email) {
+            const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+            return re.test(email) && email.length <= 254 && !email.includes('..') && !email.startsWith('.') && !email.endsWith('.');
+        }
+
+        function analyzeEmail(email) {
+            const lower = email.toLowerCase().trim();
+            if (!lower) {
+                return { valid: false, msg: 'Escribe un correo electrónico.' };
+            }
+            if (!isValidEmailFormat(lower)) {
+                return { valid: false, msg: 'Formato inválido. Revisa que tenga @ y un dominio correcto.' };
+            }
+            const domain = lower.split('@')[1];
+            if (!domain || domain.length < 3) {
+                return { valid: false, msg: 'Dominio incompleto o inválido.' };
+            }
+            if (disposableDomains.some(d => domain === d || domain.endsWith('.' + d))) {
+                return { valid: false, msg: 'Correo temporal / desechable detectado. Usa un correo real.' };
+            }
+            const isTrusted = trustedProviders.some(p => domain === p);
+            const hasGoodTld = /\.(com|es|net|org|edu|gov|mx|ar|co|uk|de|fr|it|pt|br|cl)$/i.test(domain);
+            if (!hasGoodTld && !isTrusted) {
+                return { valid: false, msg: 'Dominio poco común o sospechoso. Usa Gmail, Hotmail/Outlook, Yahoo, etc.' };
+            }
+            let analysisText = '';
+            if (domain.includes('hotmail') || domain.includes('outlook') || domain.includes('live.com') || domain.includes('msn.com')) {
+                analysisText = 'Análisis: proveedor Microsoft (Hotmail/Outlook) detectado · formato correcto · dominio legítimo';
+            } else if (domain.includes('gmail') || domain.includes('googlemail')) {
+                analysisText = 'Análisis: proveedor Google (Gmail) detectado · formato correcto · dominio legítimo';
+            } else if (isTrusted) {
+                analysisText = 'Análisis: proveedor conocido · formato correcto · dominio legítimo';
+            } else {
+                analysisText = 'Análisis: formato válido · dominio con TLD estándar · no se detectaron patrones de correo temporal';
+            }
+            return { valid: true, msg: analysisText };
+        }
+
+        function showSection(section, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const app = document.getElementById('app');
+            if (section === 'pdf') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">📄 Pizarra Virtual</h2><div class="iframe-container"><iframe src="${DRIVE_PDF_URL}" width="100%" height="100%"></iframe></div></div>`;
+            } else if (section === 'video') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">🎥 Video Clase</h2><div class="iframe-container"><iframe src="${DRIVE_VIDEO_URL}" width="100%" height="100%"></iframe></div></div>`;
+            }
+        }
+
+        function prepQuiz(mode, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+           
+            state = {
+                currentMode: mode,
+                view: 'quiz_home',
+                studentName: '',
+                studentEmail: '',
+                activeQuestions: [],
+                currentQuestion: 0,
+                score: 0,
+                selectedAnswer: null,
+                isAnswerCorrect: null,
+                emailStatus: null,
+                emailAnalysis: null,
+                emailAnalysisMsg: ''
+            };
+            render();
+        }
+
+        function startQuiz() {
+            if (state.currentMode === 'deber') {
+                // Práctica: 30 preguntas en orden
+                state.activeQuestions = [...quizData].slice(0, 30);
+            } else if (state.currentMode === 'evaluacion') {
+                // Repaso: 10 preguntas aleatorias
+                state.activeQuestions = [...quizData]
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 10);
+            } else if (state.currentMode === 'extra') {
+                // Deber: 20 preguntas en orden
+                state.activeQuestions = [...quizDataExtra].slice(0, 20);
+            } else if (state.currentMode === 'evaluacion_final') {
+                // Evaluación: 16 preguntas en orden
+                state.activeQuestions = [...quizDataEvaluacion];
+            }
+            state.view = 'name_input';
+            state.emailAnalysis = null;
+            state.emailAnalysisMsg = '';
+            render();
+        }
+
+        function onEmailInput() {
+            const e = document.getElementById('email-in');
+            if (!e) return;
+            const val = e.value.trim();
+            if (val.length < 5) {
+                state.emailAnalysis = null;
+                state.emailAnalysisMsg = '';
+                updateEmailUI();
+                return;
+            }
+            state.emailAnalysis = 'checking';
+            state.emailAnalysisMsg = 'Analizando correo…';
+            updateEmailUI();
+            clearTimeout(window._emailCheckTimer);
+            window._emailCheckTimer = setTimeout(() => {
+                const result = analyzeEmail(val);
+                state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+                state.emailAnalysisMsg = result.msg;
+                updateEmailUI();
+            }, 600);
+        }
+
+        function updateEmailUI() {
+            const feedback = document.getElementById('email-feedback');
+            const analysis = document.getElementById('email-analysis');
+            const input = document.getElementById('email-in');
+            if (!feedback || !analysis || !input) return;
+            if (state.emailAnalysis === 'checking') {
+                feedback.innerHTML = `<span class="text-slate-500 text-sm flex items-center gap-2"><span class="dot-pulse">●</span> Verificando…</span>`;
+                analysis.innerHTML = `<p class="text-xs text-slate-400 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            } else if (state.emailAnalysis === 'invalid') {
+                feedback.innerHTML = `<span class="text-red-600 text-sm font-semibold">✗ Correo no válido o inexistente</span>`;
+                analysis.innerHTML = `<p class="text-xs text-red-500/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-emerald-400', 'border-slate-300');
+                input.classList.add('border-red-400');
+            } else if (state.emailAnalysis === 'valid') {
+                feedback.innerHTML = `<span class="text-emerald-600 text-sm font-semibold">✓ Correo aceptado</span>`;
+                analysis.innerHTML = `<p class="text-xs text-emerald-600/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-slate-300');
+                input.classList.add('border-emerald-400');
+            } else {
+                feedback.innerHTML = '';
+                analysis.innerHTML = '';
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            }
+        }
+
+        function validaDatos() {
+            const n = document.getElementById('name-in').value.trim();
+            const e = document.getElementById('email-in').value.trim();
+            if (n.length <= 2) {
+                alert("Ingresa nombre completo (mínimo 3 caracteres).");
+                return;
+            }
+            const result = analyzeEmail(e);
+            state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+            state.emailAnalysisMsg = result.msg;
+            updateEmailUI();
+            if (!result.valid) return;
+            state.studentName = n;
+            state.studentEmail = e;
+            state.view = 'playing';
+            render();
+        }
+
+        // ---------- LÓGICA SINGLE + MULTI ----------
+        function isMultiQuestion(q) {
+            return q.multi === 'ON';
+        }
+
+        function arraysEqual(a, b) {
+            if (!Array.isArray(a) || !Array.isArray(b)) return false;
+            if (a.length !== b.length) return false;
+            const sa = [...a].sort();
+            const sb = [...b].sort();
+            return sa.every((v, i) => v === sb[i]);
+        }
+
+        function handleAnswer(option) {
+            if (state.isAnswerCorrect !== null) return;
+
+            const currentQ = state.activeQuestions[state.currentQuestion];
+
+            if (isMultiQuestion(currentQ)) {
+                let selected = Array.isArray(state.selectedAnswer) ? [...state.selectedAnswer] : [];
+                const idx = selected.indexOf(option);
+
+                if (idx > -1) {
+                    selected.splice(idx, 1);
+                } else {
+                    if (selected.length >= currentQ.maxSelect) return;
+                    selected.push(option);
+                }
+                state.selectedAnswer = selected;
+                render();
+            } else {
+                if (state.selectedAnswer !== null) return;
+                state.selectedAnswer = option;
+                state.isAnswerCorrect = (option === currentQ.answer);
+                if (state.isAnswerCorrect) state.score++;
+                render();
+                if (state.isAnswerCorrect) {
+                    setTimeout(() => nextQuestion(), 1000);
+                }
+            }
+        }
+
+        function checkMultiAnswer() {
+            if (state.isAnswerCorrect !== null) return;
+
+            const currentQ = state.activeQuestions[state.currentQuestion];
+            if (!isMultiQuestion(currentQ)) return;
+
+            const selected = Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [];
+            if (selected.length === 0) return;
+
+            const correctAnswers = Array.isArray(currentQ.answer) ? currentQ.answer : [currentQ.answer];
+            state.isAnswerCorrect = arraysEqual(selected, correctAnswers);
+
+            if (state.isAnswerCorrect) state.score++;
+            render();
+
+            if (state.isAnswerCorrect) {
+                setTimeout(() => nextQuestion(), 1000);
+            }
+        }
+
+        function nextQuestion() {
+            if (state.currentQuestion + 1 < state.activeQuestions.length) {
+                state.currentQuestion++;
+                state.selectedAnswer = null;
+                state.isAnswerCorrect = null;
+                render();
+            } else {
+                state.view = 'results';
+                render();
+                enviarCorreo();
+            }
+        }
+
+        function enviarCorreo() {
+            if (!state.studentEmail) return;
+            state.emailStatus = 'sending';
+            render();
+            const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+            const totalQ = state.activeQuestions.length;
+            let imageUrl = '';
+            let mensaje = '';
+            if (scorePerc >= 90) {
+                imageUrl = 'https://img.icons8.com/color/128/medal2.png';
+                mensaje = `¡Excelente trabajo, ${state.studentName}! Obtuviste un resultado sobresaliente.`;
+            } else if (scorePerc >= 70) {
+                imageUrl = 'https://img.icons8.com/color/128/diploma.png';
+                mensaje = `¡Muy bien, ${state.studentName}! Has aprobado con un buen resultado.`;
+            } else if (scorePerc >= 50) {
+                imageUrl = 'https://img.icons8.com/color/128/ok.png';
+                mensaje = `Buen esfuerzo, ${state.studentName}. Sigue practicando para mejorar.`;
+            } else {
+                imageUrl = 'https://img.icons8.com/color/128/error.png';
+                mensaje = `Ánimo, ${state.studentName}. Revisa el material y vuelve a intentarlo.`;
+            }
+            const params = {
+                to_name: state.studentName,
+                to_email: state.studentEmail,
+                score: scorePerc,
+                correct_answers: state.score,
+                total_questions: totalQ,
+                mode_name: state.currentMode.toUpperCase(),
+                image_url: imageUrl,
+                mensaje: mensaje,
+                fecha: new Date().toLocaleDateString('es-ES', {
+                    year: 'numeric', month: 'long', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                })
+            };
+            emailjs.send("service_dhvsi72", "template_cy74x9h", params)
+                .then(() => {
+                    state.emailStatus = 'success';
+                    render();
+                })
+                .catch((err) => {
+                    console.error('Error EmailJS:', err);
+                    state.emailStatus = 'error';
+                    render();
+                });
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+           
+            let modeTitle = '';
+            let modeDesc = '';
+            if (state.currentMode === 'deber') {
+                modeTitle = '🧪 Deber';
+                modeDesc = 'Resuelve las 30 preguntas del banco en orden.';
+            } else if (state.currentMode === 'evaluacion') {
+                modeTitle = '📝 Repaso';
+                modeDesc = 'Prueba de 10 preguntas seleccionadas al azar.';
+            } else if (state.currentMode === 'extra') {
+                modeTitle = '📚 Práctica';
+                modeDesc = 'Resuelve las 20 preguntas del Deber.';
+            } else if (state.currentMode === 'evaluacion_final') {
+                modeTitle = '📊 Evaluación';
+                modeDesc = 'Resuelve las 16 preguntas de la Evaluación.';
+            }
+           
+            if (state.view === 'quiz_home') {
+                app.innerHTML = `
+                <div class="text-center py-16 animate-fade-in bg-white rounded-[3rem] shadow-xl border">
+                    <h2 class="text-4xl font-black text-slate-800 mb-2">${modeTitle}</h2>
+                    <p class="text-slate-500 mb-8 text-lg">${modeDesc}</p>
+                    <button onclick="startQuiz()" class="bg-emerald-600 text-white px-12 py-5 rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all">
+                        INICIAR
+                    </button>
+                </div>`;
+            }
+
+            if (state.view === 'name_input') {
+                app.innerHTML = `
+                <div class="max-w-md mx-auto bg-white p-10 rounded-[2.5rem] shadow-2xl animate-fade-in">
+                    <h2 class="text-2xl font-black mb-6 text-center">Registro de Estudiante</h2>
+                    <input id="name-in" type="text" placeholder="Nombre y Apellido completo" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl mb-4 focus:border-emerald-500 outline-none">
+                   
+                    <div class="relative mb-1">
+                        <input id="email-in" type="email" placeholder="Correo para recibir nota (Gmail, Hotmail…)"
+                               class="w-full p-4 bg-slate-50 border border-slate-300 rounded-xl focus:border-emerald-500 outline-none transition-colors"
+                               oninput="onEmailInput()" onblur="onEmailInput()">
+                    </div>
+                   
+                    <div id="email-feedback" class="min-h-[22px] mb-1"></div>
+                    <div id="email-analysis" class="mb-5"></div>
+                   
+                    <button onclick="validaDatos()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all">
+                        ENTRAR AL TEST
+                    </button>
+                    <p class="text-center text-[11px] text-slate-400 mt-4">Se verifica formato y se descartan correos temporales. No se envía nada hasta terminar el test.</p>
+                </div>`;
+                setTimeout(updateEmailUI, 50);
+            }
+
+            if (state.view === 'playing') {
+                const q = state.activeQuestions[state.currentQuestion];
+                const progress = ((state.currentQuestion + 1) / state.activeQuestions.length) * 100;
+                const multi = isMultiQuestion(q);
+                const selected = multi
+                    ? (Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [])
+                    : (state.selectedAnswer ? [state.selectedAnswer] : []);
+
+                const multiHint = multi
+                    ? `<p class="text-sm text-sky-600 font-semibold mb-4">
+                         Selección múltiple · elige ${q.maxSelect} respuesta${q.maxSelect > 1 ? 's' : ''}
+                         ${selected.length > 0 ? `(${selected.length}/${q.maxSelect})` : ''}
+                       </p>`
+                    : '';
+
+                app.innerHTML = `
+                <div class="animate-fade-in">
+                    <div class="flex justify-between items-center mb-6 px-4">
+                        <span class="font-black text-emerald-600">${state.currentQuestion + 1} / ${state.activeQuestions.length}</span>
+                        <div class="w-48 bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full transition-all" style="width:${progress}%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border">
+                        <h2 class="text-2xl font-bold text-slate-800 mb-2 leading-tight">${q.question}</h2>
+                        ${multiHint}
+                        <div class="grid gap-3">
+                            ${q.options.map(opt => {
+                                let style = "border-slate-100 bg-slate-50 hover:border-emerald-200";
+                                const isSelected = selected.includes(opt);
+
+                                if (state.isAnswerCorrect !== null) {
+                                    if (multi) {
+                                        const correctSet = Array.isArray(q.answer) ? q.answer : [q.answer];
+                                        if (correctSet.includes(opt) && isSelected) {
+                                            style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                        } else if (isSelected && !correctSet.includes(opt)) {
+                                            style = "border-red-500 bg-red-100 text-red-800";
+                                        } else if (correctSet.includes(opt) && !isSelected) {
+                                            style = "border-emerald-300 bg-emerald-50 text-emerald-700";
+                                        }
+                                    } else {
+                                        if (isSelected) {
+                                            style = state.isAnswerCorrect
+                                                ? "border-emerald-500 bg-emerald-100 text-emerald-800"
+                                                : "border-red-500 bg-red-100 text-red-800";
+                                        }
+                                    }
+                                } else if (isSelected) {
+                                    if (multi) {
+                                        style = "border-sky-400 bg-sky-100 text-sky-800";
+                                    } else {
+                                        style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                    }
+                                }
+
+                                return `<button onclick="handleAnswer('${opt.replace(/'/g, "\\'")}')" 
+                                            class="p-5 text-left border-2 rounded-xl font-bold transition-all ${style}">
+                                            ${opt}
+                                        </button>`;
+                            }).join('')}
+                        </div>
+
+                        ${multi && state.isAnswerCorrect === null ? `
+                            <button onclick="checkMultiAnswer()" 
+                                class="mt-6 w-full py-4 rounded-xl font-bold transition-all
+                                ${selected.length === q.maxSelect 
+                                    ? 'bg-sky-600 text-white hover:bg-sky-700' 
+                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'}"
+                                ${selected.length !== q.maxSelect ? 'disabled' : ''}>
+                                Comprobar respuesta (${selected.length}/${q.maxSelect})
+                            </button>
+                        ` : ''}
+
+                        ${state.selectedAnswer !== null && state.isAnswerCorrect === false ? `
+                            <div class="mt-6 p-5 bg-amber-50 border border-amber-200 rounded-xl">
+                                <p class="font-bold text-amber-800 mb-2">Explicación:</p>
+                                <p class="text-slate-700">${q.explanation}</p>
+                            </div>
+                            <button onclick="nextQuestion()" class="mt-6 w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition-all">
+                                Siguiente pregunta
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>`;
+            }
+
+            if (state.view === 'results') {
+                const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+                app.innerHTML = `
+                <div class="max-w-md mx-auto text-center animate-fade-in bg-white p-12 rounded-[3rem] shadow-2xl">
+                    <h2 class="text-2xl font-black mb-2">${state.studentName}</h2>
+                    <p class="text-slate-400 uppercase text-xs font-bold mb-6">${state.currentMode}</p>
+                    <div class="text-7xl font-black text-emerald-600 mb-4">${scorePerc}%</div>
+                    <p class="text-lg font-bold text-slate-700 mb-10">${state.score} / ${state.activeQuestions.length} correctas</p>
+                    <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">VOLVER AL INICIO</button>
+                    <p class="mt-6 text-xs font-bold text-slate-400">
+                        ${state.emailStatus === 'success' ? '✅ Nota e imagen enviadas al correo' :
+                          state.emailStatus === 'error' ? '⚠️ Error al enviar nota e imagen' :
+                          '⏳ Enviando nota e imagen al correo...'}
+                    </p>
+                </div>`;
+            }
+        }
+        render();
+    </script>
+</body>
+</html>
+
+
+
+
